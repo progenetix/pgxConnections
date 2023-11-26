@@ -38,7 +38,6 @@ sub setDefaults {
 sub pgReadParam {
 
   my %args = @_;
-  $args{pgV} = setDefaults();
   foreach my $key (param()) {
     $args{pgV}->{$key} = param($key);
   }

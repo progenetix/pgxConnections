@@ -46,8 +46,26 @@ use svgUtilities;
 # print 'Content-type: text/plain'."\n\n";
 
 my %args;
+
+$args{pgV} = setDefaults();
 $args{pgV} = pgReadParam(%args);
 
+################################################################################
+if ($args{pgV}->{debug} == 1 or $args{pgV}->{help} == 1) {
+	print	'Content-type: text/plain'."\n\n";
+}
+
+if ($args{pgV}->{help} == 1) {
+	print '####################################'."\n";
+	print '**Plot Parameters**'."\n\n".'Modify through query string:'."\n\n";
+	my $dump = Dumper($args{pgV});
+    print $dump;
+	print '####################################'."\n\n";
+	exit;
+}
+
+
+################################################################################
 # print Dumper($args{pgV});
 
 my $nodesRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab';
@@ -55,10 +73,6 @@ my $connRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.git
 
 $args{pgV}->{api_doctype} = lc($args{pgV}->{imgtype});
 
-################################################################################
-if ($args{pgV}->{debug} == 1) {
-	print	'Content-type: text/plain'."\n\n" }
-################################################################################
 
 if (! $args{pgV}->{nodes}) {
 	$args{pgV}->{nodes} = $nodesRef;
