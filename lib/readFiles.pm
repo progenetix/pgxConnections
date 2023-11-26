@@ -7,7 +7,7 @@ sub pgWebFile2list {
 
 	my %args =	@_;
 	$args{HTTP} ||= $_[0];
-	$args{DELCOMMENT} ||= 'T';
+	$DELCOMMENT = 'T';
 
 	my $dlLink = $args{HTTP};
 
@@ -16,10 +16,10 @@ sub pgWebFile2list {
 
 	$ENV{'PERL_LWP_SSL_VERIFY_HOSTNAME'} = 0;
 
-	my $ua				=		new LWP::UserAgent;
+	my $ua = new LWP::UserAgent;
   $ua->agent("Mozilla/8.0");
 
-  my $req				=		new HTTP::Request 'GET' => $dlLink;
+  my $req = new HTTP::Request 'GET' => $dlLink;
   $req->header('Accept' => 'text/plain');
 
   my $res =		$ua->request($req);

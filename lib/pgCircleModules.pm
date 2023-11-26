@@ -508,7 +508,7 @@ sub circleObjectAddIdeogram {
 			my $cbPlotStartF = $areaF_0 + $args{BASESCALING} * ($cbPlotStartBase - $plot_region->{BASESTART});
 			my $cbPlotStopF = $areaF_0 + $args{BASESCALING} * ($cbPlotStopBase - $plot_region->{BASESTART});
 
-			# circradius valus are saved in separate variables, to be changed for centromers etc.
+			# circ_radius valus are saved in separate variables, to be changed for centromers etc.
 
 			my $bandStartRad = $args{RADIUS};
 			my $bandStopRad = $args{RADIUS} - $args{CHROW};

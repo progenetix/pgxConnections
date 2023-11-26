@@ -5,31 +5,12 @@ sub collabPlots {
 
 	my %args = @_;
 
-	$args{pgV}->{project} ||= 'compbio';
-	$args{pgV}->{circNodeGaps}||= 2;
 	$args{NODESIZE} ||= 20;
-	$args{pgV}->{imgh} ||= 620;
-	$args{pgV}->{legendw} ||= 180;
-	$args{pgV}->{legendpos} ||= 'top';
-	$args{pgV}->{legendfpx} ||= 13;
 	$args{pgV}->{imgw} ||= $args{pgV}->{imgh} + $args{pgV}->{legendw};
 	$args{CENTERX} ||= $args{pgV}->{imgh} / 2;
 	$args{CENTERY} ||= $args{pgV}->{imgh} / 2;
-	$args{pgV}->{fontpx} ||= 15;
-	$args{pgV}->{plot_bgcolor_hex} ||= '#ffffff';
-	$args{pgV}->{fontcol} ||= '#000000';
-	$args{pgV}->{conn_opacity} ||= 0.6;
-	$args{pgV}->{gapwidth} ||= 5;
-	$args{pgV}->{circradius}||= 130;
-	$args{pgV}->{chrowidth} ||= 10;
-	$args{pgV}->{label_rad} ||= $args{pgV}->{circradius} + $args{pgV}->{chrowidth} + $args{pgV}->{gapwidth};
-	$args{pgV}->{radConns} ||= $args{pgV}->{circradius} - $args{pgV}->{gapwidth};
-	$args{pgV}->{connections} ||= q{};
-	$args{pgV}->{nodes} ||= q{};
-	$args{pgV}->{nodesort} ||= 'random';
-	$args{pgV}->{legendsort} ||= 'size';
-	$args{pgV}->{transparent} ||= 'opaque';
-	$args{pgV}->{legendYgap} ||= 0;
+	$args{pgV}->{label_rad} ||= $args{pgV}->{circ_radius} + $args{pgV}->{ring_width} + $args{pgV}->{gapwidth};
+	$args{pgV}->{radConns} ||= $args{pgV}->{circ_radius} - $args{pgV}->{gapwidth};
 
 	use constant PI => 4 * atan2(1, 1);
 
@@ -55,7 +36,8 @@ sub collabPlots {
 	# reading the connections file
 	my @connIn;
 	if ($args{pgV}->{connections} =~ /../) {
-	  @connIn = @{ pgWebFile2list( $args{pgV}->{connections} ) } }
+		$args{HTTP} = $args{pgV}->{connections};
+	  @connIn = @{ pgWebFile2list( %args ) } }
 	elsif (-f $args{pgP}->{loc_connFile}) {
 		@connIn = @{ pgFile2list( FILE => $args{pgP}->{loc_connFile} ) } }
 
@@ -76,11 +58,9 @@ sub collabPlots {
 	# collecting the per name information in an href
 
 	foreach (@nodesIn) {
-
 		if ($_ =~ /^#/) { next }
+		my ($entity, $lat, $lon, $count, $name, $link) = split("\t", $_);		
 
-		my ($entity, $lat, $lon, $count, $name, $link) = split("\t", $_);
-		
 		if ($lat !~ /^\-?\d+?(\.\d+?)?$/) {
 			next }
 		
@@ -94,7 +74,6 @@ sub collabPlots {
 
 		$entities->{$entity}->{COLOR} = '128,255,84';
 		$entities->{$entity}->{LABELL} = $entities->{$entity}->{INSTITUTION};
-
 	}
 
 	# now making the any-2-any connections if none were loaded
@@ -104,7 +83,6 @@ sub collabPlots {
 		for (my $i=0; $i < $#nodes; $i++) {
 			for (my $k=$i+1; $k <= $#nodes; $k++) {
 				push(@connIn, join("\t", ($nodes[$i], $nodes[$k])));
-
 	}}}
 
 	my @conCols = map { join ",", map { sprintf "%.0f", rand(255) } (0..2) } (0..$#connIn);
@@ -113,15 +91,12 @@ sub collabPlots {
 	# collecting connections per name pair in an href
 
 	foreach (@connIn) {
-
 		my @connection = split("\t", $_);
-
 		if (
 			(any { lc($_) eq lc($connection[0]) } keys %{$nodesOut})
 			&&
 			(any { lc($_) eq lc($connection[1]) } keys %{$nodesOut})
 		) {
-
       my $connColor;
       if ($connection[2] =~ /^\d\d?\d?\,\d\d?\d?\,\d\d?\d?$/) {
         $connColor = $connection[2] }
@@ -132,8 +107,8 @@ sub collabPlots {
 				MEMBERS => [sort(($connection[0], $connection[1]))],
 				COLOR => $connColor
 			};
-
-	}}
+		}
+	}
 
 	foreach (keys %{$entities}) { $entities->{$_}->{COLOR} = shift @instCols };
 
@@ -163,7 +138,7 @@ sub collabPlots {
 		$nodesOut->{$ID}->{baseStart} = $baseCorrection;
 		$nodesOut->{$ID}->{baseStop} = $baseCorrection + $args{NODESIZE};
 		$nodesOut->{$ID}->{baseLabel} = $baseCorrection + $args{NODESIZE} / 2;
-		$baseCorrection	+= $args{NODESIZE} + $args{pgV}->{circNodeGaps};
+		$baseCorrection	+= $args{NODESIZE} + $args{pgV}->{circ_node_gaps};
 	}
 
 	my $circleSize = $baseCorrection;
@@ -173,11 +148,10 @@ xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
 height="'.$args{pgV}->{imgh}.'px"
 width="'.$args{pgV}->{imgw}.'px"
-style="'.($args{pgV}->{transparent} !~ /transparent/ ? 'background-color: '.$args{pgV}->{plot_bgcolor_hex}.'; ' : q{}).'font-family: helvetica, sans-serif; "
+style="'.($args{pgV}->{transparent} !~ /transparent/ ? 'background-color: #ffffff; ' : q{}).'font-family: helvetica, sans-serif; "
 >';
 
 if ($args{pgV}->{transparent} !~ /transparent/) {
-
 	$SVG .= '
 <rect x="0" y="0" width="'.$args{pgV}->{imgw}.'" height="'.$args{pgV}->{imgh}.'" style="fill: '.$args{pgV}->{plot_bgcolor_hex}.';" />';
 
@@ -195,15 +169,15 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 
 		my $chroF_0 = $nodesOut->{$ID}->{baseStart} / $circleSize;
 		my $chroF_n = ($nodesOut->{$ID}->{baseStart} + $args{NODESIZE}) / $circleSize;
-		$SVG				.= pgSVGpie(
-											%args,
-											RADI => $args{pgV}->{circradius},
-											RADO => $args{pgV}->{circradius} + $args{pgV}->{chrowidth},
-											PIESTARTF => $chroF_0,
-											PIESTOPF => $chroF_n,
-											STYLE => 'fill: rgb('.$entities->{ $nodesOut->{$ID}->{INSTITUTION} }->{COLOR}.')',
-											LINK => $nodesOut->{$ID}->{LINK},
-										);
+		$SVG .= pgSVGpie(
+			%args,
+			RADI => $args{pgV}->{circ_radius},
+			RADO => $args{pgV}->{circ_radius} + $args{pgV}->{ring_width},
+			PIESTARTF => $chroF_0,
+			PIESTOPF => $chroF_n,
+			STYLE => 'fill: rgb('.$entities->{ $nodesOut->{$ID}->{INSTITUTION} }->{COLOR}.')',
+			LINK => $nodesOut->{$ID}->{LINK},
+		);
 
 		my $circFraction = ($nodesOut->{$ID}->{baseStart} + $args{NODESIZE} / 2 ) / $circleSize;
 
@@ -218,27 +192,23 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 				$rad,
 				$deg,
 		) = pgCirclePoint(
-							%args,
-							RADIUS => $args{pgV}->{label_rad},
-							CIRCF => $circFraction,
-						);
+			%args,
+			RADIUS => $args{pgV}->{label_rad},
+			CIRCF => $circFraction,
+		);
 
 		# the rotation for the chromosome labels is calculated, making them aligned along the circle
 		# with the bottom facing the circle's center (currently only used for SVG plotting)
 
 		my $anchorPoint = 'start';
 
-		if (
-			$deg > 90
-			&&
-			$deg <270
-		) {
+		if ( $deg > 90 && $deg <270 ) {
 			$deg += 180;
 			$anchorPoint = 'end';
 		}
 
 		if ($args{pgV}->{fontpx} > 0) { 
-			$SVG 			.= '
+			$SVG .= '
 <a
 	xlink:href="'.$nodesOut->{$ID}->{LINK}.'"
 	xlink:show="new"
@@ -277,11 +247,8 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 			@down = shuffle(@down) }
 		my $legendItemH = $entityNumber * 2 * $legendFontPx + 2 * $legendFontPx;
 
-
-#		$args{pgV}->{legendYgap};
-
 		if ($args{pgV}->{legendpos} =~ /split/) {
-			$args{pgV}->{legendYgap} = $args{pgV}->{imgh} - $legendItemH - 4 * $legendFontPx }
+			$args{pgV}->{legend_y_gap} = $args{pgV}->{imgh} - $legendItemH - 4 * $legendFontPx }
 
 		if ($args{pgV}->{legendpos} =~ /split|center/) {
 
@@ -295,8 +262,8 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 			if ($args{pgV}->{legendsort} =~ /size/i) {
 				@up = sort { length($a) <=> length($b) } @up }
 
-			$topLegendY = $args{pgV}->{imgh} / 2 - @down * 2 * $legendFontPx + $legendFontPx / 2 - $args{pgV}->{legendYgap} / 2;
-			$bottomLegendY = $args{pgV}->{imgh} / 2 + $legendFontPx / 2 + $args{pgV}->{legendYgap} / 2;
+			$topLegendY = $args{pgV}->{imgh} / 2 - @down * 2 * $legendFontPx + $legendFontPx / 2 - $args{pgV}->{legend_y_gap} / 2;
+			$bottomLegendY = $args{pgV}->{imgh} / 2 + $legendFontPx / 2 + $args{pgV}->{legend_y_gap} / 2;
 
 		}
 
@@ -351,25 +318,24 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 			my $randF = 0.01 * shuffle(35..45);
 			my $randS = 0.01 * shuffle(-23..23);
 			my %connFs = (
-                          connstartF1 => ($nodesOut->{$ID1}->{baseStart} + $args{NODESIZE} * ($randF + $randS)) / $circleSize,
-                          connstopF1 => ($nodesOut->{$ID1}->{baseStart} + $args{NODESIZE} * (1-$randF + $randS)) / $circleSize,
-                          connstartF2 => ($nodesOut->{$ID2}->{baseStart} + $args{NODESIZE} * ($randF + $randS)) / $circleSize,
-                          connstopF2 => ($nodesOut->{$ID2}->{baseStart} + $args{NODESIZE} * (1-$randF + $randS)) / $circleSize,
-                        );
+        connstartF1 => ($nodesOut->{$ID1}->{baseStart} + $args{NODESIZE} * ($randF + $randS)) / $circleSize,
+        connstopF1 => ($nodesOut->{$ID1}->{baseStart} + $args{NODESIZE} * (1-$randF + $randS)) / $circleSize,
+        connstartF2 => ($nodesOut->{$ID2}->{baseStart} + $args{NODESIZE} * ($randF + $randS)) / $circleSize,
+        connstopF2 => ($nodesOut->{$ID2}->{baseStart} + $args{NODESIZE} * (1-$randF + $randS)) / $circleSize,
+      );
 
 			foreach my $where (qw(start stop)) {
 
 				foreach my $site (1,2) {
-
 					(
 						$connOut->{$ID}->{ $where.$site.'x' },
 						$connOut->{$ID}->{ $where.$site.'y' },
 						$connOut->{$ID}->{ $where.'Rad'.$site }
 					) = pgCirclePoint(
-														%args,
-														RADIUS => $args{pgV}->{radConns},
-														CIRCF => $connFs{ 'conn'.$where.'F'.$site },
-													);
+						%args,
+						RADIUS => $args{pgV}->{radConns},
+						CIRCF => $connFs{ 'conn'.$where.'F'.$site },
+					);
 
 					$args{BezRad} = 0.1 * shuffle(4..9);
 
@@ -390,7 +356,7 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 
 	 }}
 
-	$SVG								.= '
+	$SVG .= '
 </svg>';
 
 	return	$SVG;

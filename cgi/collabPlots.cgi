@@ -40,7 +40,7 @@ use svgUtilities;
 #### Examples (compbiozurich logo):
 
 * compbiozurich logo
-    - https://progenetix.org/cgi-bin/collabplots.cgi?nodes=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab&nodesort=random&connections=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/connections.tab&plot_bgcolor_hex=%23ffffff&fontcol=%23000000&radius=65&gapwidth=2&chrowidth=6&legendw=-1&fontpx=-1&imgtype=SVG&transparent=opaque&Submit=Submit&embed=1&imgh=200&imgw=200&conn_opacity=0.6&debug=
+    - http://progenetix.org/cgi/pgxConnections/cgi/collabPlots.cgi?nodes=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/people.tab&nodesort=inst&connections=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/connections.tab&legendw=120
 =cut
 
 # print 'Content-type: text/plain'."\n\n";
@@ -48,24 +48,10 @@ use svgUtilities;
 my %args;
 $args{pgV} = pgReadParam(%args);
 
+# print Dumper($args{pgV});
+
 my $nodesRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab';
 my $connRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/connections.tab';
-
-$args{pgV}->{plot_bgcolor_hex} //'#ffffff';
-$args{pgV}->{fontcol} //='#000000';
-$args{pgV}->{fontpx} //= 15;
-$args{pgV}->{imgh} //= 620;
-$args{pgV}->{legendw} //= 180;
-$args{pgV}->{legendfpx}	//= 13;
-$args{pgV}->{circradius} //= 125;
-$args{pgV}->{imgtype} //= 'SVG';
-$args{pgV}->{embed} //= '-1';
-$args{pgV}->{nodesort} //= 'random';
-$args{pgV}->{transparent} //= 'opaque';
-$args{pgV}->{legendsort} //= 'size';
-
-$args{pgV}->{map} //= -1;
-$args{pgV}->{collab} //= 1;
 
 $args{pgV}->{api_doctype} = lc($args{pgV}->{imgtype});
 
