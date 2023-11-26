@@ -27,7 +27,13 @@ sub setDefaults {
     'project' => 'compbiozurich',
     'nodesort' => 'random',
     'transparent' => 'opaque',
+    'connections' => ""
   };
+
+  # files
+
+  $defaults->{nodes} = "";
+  $defaults->{connections} = "";
 
   return $defaults;
 

@@ -69,15 +69,8 @@ if ($args{pgV}->{help} == 1) {
 # print Dumper($args{pgV});
 
 my $nodesRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab';
-my $connRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/connections.tab';
 
 $args{pgV}->{api_doctype} = lc($args{pgV}->{imgtype});
-
-
-if (! $args{pgV}->{nodes}) {
-	$args{pgV}->{nodes} = $nodesRef;
-	$args{pgV}->{connections} = $connRef;
-}
 
 print 'Content-type: image/svg+xml'."\n\n";
 print collabPlots(%args);

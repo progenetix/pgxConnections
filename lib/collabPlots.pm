@@ -35,9 +35,8 @@ sub collabPlots {
 
 	# reading the connections file
 	my @connIn;
-	if ($args{pgV}->{connections} =~ /../) {
-		$args{HTTP} = $args{pgV}->{connections};
-	  @connIn = @{ pgWebFile2list( %args ) } }
+	if ($args{pgV}->{connections} =~ /...../) {
+	  @connIn = @{ pgWebFile2list( $args{pgV}->{connections} ) } }
 	elsif (-f $args{pgP}->{loc_connFile}) {
 		@connIn = @{ pgFile2list( FILE => $args{pgP}->{loc_connFile} ) } }
 
@@ -278,7 +277,6 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 		}
 
 		foreach (@down) {
-
 			$SVG			.= '
 <rect x="'.$legendX.'" y="'.$topLegendY.'" width="'.($args{pgV}->{fontpx} + 1).'" height="'.($legendFontPx + 1).'" fill="rgb('.$entities->{$_}->{COLOR}.')" />
 <text

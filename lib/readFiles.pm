@@ -1,15 +1,10 @@
 use List::MoreUtils qw(any apply uniq);
 use LWP::UserAgent;
 use LWP::Simple;
-use	Spreadsheet::Read;
 
 sub pgWebFile2list {
 
-	my %args =	@_;
-	$args{HTTP} ||= $_[0];
-	$DELCOMMENT = 'T';
-
-	my $dlLink = $args{HTTP};
+	my $dlLink = $_[0];
 
   if ($dlLink =~ /dropbox\.com/) {
   	$dlLink =~ s/(\?dl=\w)?$/?dl=1/ }
@@ -23,25 +18,8 @@ sub pgWebFile2list {
   $req->header('Accept' => 'text/plain');
 
   my $res =		$ua->request($req);
-	my @filecontent;
-
-	if ($dlLink =~ /\.xls/i) {
-		my $book		=	ReadData($res->{_content});
-		foreach my $currentRow (Spreadsheet::Read::rows($book->[1])) {
-			push(
-				@filecontent,
-				join("\t", @{ $currentRow }),
-			);
-		}
-	} else {
-		@filecontent			  =		split("\n", $res->{_content});
-		chomp	@filecontent;
-	}
-
-	if ($args{DELCOMMENT} =~ /^T/i) {
-		@filecontent 			  = 	grep{ ! /^\#/ } @filecontent;
-		@filecontent 			  = 	grep{ /./ } @filecontent;
-	}
+	my @filecontent = split("\n", $res->{_content});
+	chomp	@filecontent;
 
 	return	\@filecontent;
 
