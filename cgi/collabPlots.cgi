@@ -26,7 +26,6 @@ BEGIN { unshift @INC, '../lib' };
 
 use readFiles;
 use setVars;
-use webStats;
 
 use collabPlots;
 use pgCircleModules;
@@ -47,8 +46,7 @@ use svgUtilities;
 # print 'Content-type: text/plain'."\n\n";
 
 my %args;
-
-%args = pgInitializeCGI(%args);
+$args{pgV} = pgReadParam(%args);
 
 my $nodesRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab';
 my $connRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/connections.tab';
