@@ -140,24 +140,21 @@ END
 sub circleObjectAddArea {
 
 	my %args = @_;
-
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
 	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
-
 		$args{PO}->{$ind++} = {
 			TYPE => 'verbatim',
 			VALUE => pgSVGpie(
-  										%args,
-  										RADIUSI => $args{PLOTAREAR} - $args{PLOTAREAH},
-  										RADIUSO => $args{PLOTAREAR},
-  										PIESTARTF => $areaF_0,
-  										PIESTOPF => $areaF_0 + $areaF,
-  										STYLE => 'fill: '.$args{pgV}->{plot_areacolor_hex},
-  									),
+				%args,
+				RADIUSI => $args{PLOTAREAR} - $args{PLOTAREAH},
+				RADIUSO => $args{PLOTAREAR},
+				PIESTARTF => $areaF_0,
+				PIESTOPF => $areaF_0 + $areaF,
+				STYLE => 'fill: '.$args{pgV}->{plot_areacolor_hex},
+			),
 		};
 
 		# moving along the circle to the next plot area
@@ -188,27 +185,26 @@ sub circleObjectAddGenes {
 		# randomized HEX color map
 
 		my @colors = map {
-														uc('#'.(join '',
-															map {
-																sprintf "%02x", (75+rand(175))
-															} (0..2)))
-													} (0..(scalar(@{ $genes_r })-1));
+			uc('#'.(join '',
+				map {
+					sprintf "%02x", (75+rand(175))
+				} (0..2)))
+		} (0..(scalar(@{ $genes_r })-1));
 
 		for my $i (0..$#{ $genes_r }) { $samples->[$i]->{COLOR} = shift @colors }
 
 		# gene area background
-
 		$args{PO}->{$ind++} = {
-																	TYPE => 'verbatim',
-																	VALUE => pgSVGpie(
-																								%args,
-																								RADIUSI => $args{RADIUS} - $args{GENEAREAH} * 2,
-																								RADIUSO => $args{RADIUS},
-																								PIESTARTF => $areaF_0,
-																								PIESTOPF => $areaF_0 + $areaF,
-																								STYLE => 'fill: #fffcec; fill-opacity: 0.8;',
-																							),
-																};
+			TYPE => 'verbatim',
+			VALUE => pgSVGpie(
+				%args,
+				RADIUSI => $args{RADIUS} - $args{GENEAREAH} * 2,
+				RADIUSO => $args{RADIUS},
+				PIESTARTF => $areaF_0,
+				PIESTOPF => $areaF_0 + $areaF,
+				STYLE => 'fill: #fffcec; fill-opacity: 0.8;',
+			),
+		};
 
 		foreach my $gene (sort { {$a}->{BASESTART} <=> {$b}->{BASESTART}} @{ $genes_r } ) {
 
@@ -220,31 +216,27 @@ sub circleObjectAddGenes {
 			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
 				VALUE => pgSVGpie(
-											%args,
-											LINK => $args{pgP}->{UCSClink}.'chr'.$gene->{CHRO}.'%3A'.$gene->{BASESTART}.'-'.$gene->{BASESTOP},
-											LINKSHOW => 'new',
-											LINKLAB => $gene->{gene_symbol}.' at chr'.$gene->{CHRO}.':'.$gene->{BASESTART}.'-'.$gene->{BASESTOP},
-											RADIUSI => $geneRad - $args{GENEAREAH},
-											RADIUSO => $geneRad,
-											PIESTARTF => $geneStartF,
-											PIESTOPF => $geneStopF,
-											STYLE => 'fill: '.$gene->{COLOR}.'; fill-opacity: 0.5;',
-										),
+					%args,
+					LINK => $args{pgP}->{UCSClink}.'chr'.$gene->{CHRO}.'%3A'.$gene->{BASESTART}.'-'.$gene->{BASESTOP},
+					LINKSHOW => 'new',
+					LINKLAB => $gene->{gene_symbol}.' at chr'.$gene->{CHRO}.':'.$gene->{BASESTART}.'-'.$gene->{BASESTOP},
+					RADIUSI => $geneRad - $args{GENEAREAH},
+					RADIUSO => $geneRad,
+					PIESTARTF => $geneStartF,
+					PIESTOPF => $geneStopF,
+					STYLE => 'fill: '.$gene->{COLOR}.'; fill-opacity: 0.5;',
+				),
 			};
 
 			# genes are staggered on one of two lines
-
-			$geneRad				-= $args{GENEAREAH};
+			$geneRad -= $args{GENEAREAH};
 			$geneCounter++;
-
 			if ($geneCounter =~ /(0|2|4|6|8)$/) {
-
-				$geneRad = $args{RADIUS};
-
-		}}
+				$geneRad = $args{RADIUS} }
+		}
 
 		# moving along the circle to the next plot area
-		$areaF_0				+= $areaF + $args{CHROGAPF};
+		$areaF_0 += $areaF + $args{CHROGAPF};
 
 	}
 
@@ -259,40 +251,32 @@ sub circleObjectAddGridY {
 	push(@{ $args{LABY} }, grep{ $_ != 0 } apply { $_ = '-'.$_ } @{ $args{LABY} });
 
 	my $areaF_0 = $args{STARTF};
-
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
 	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
-
 		foreach (uniq(@{ $args{LABY} })) {
-
-		my $labRad = sprintf "%.1f", $args{PLOTZEROR} + $_ * $args{PIXYFAC};
-
-		if (
-			$labRad < $args{PLOTAREAR}
-			&&
-			$labRad > ($args{PLOTAREAR} - $args{PLOTAREAH})
-		) {
-
-   			$args{PO}->{$ind++} = {
+			my $labRad = sprintf "%.1f", $args{PLOTZEROR} + $_ * $args{PIXYFAC};
+			if (
+				$labRad < $args{PLOTAREAR}
+				&&
+				$labRad > ($args{PLOTAREAR} - $args{PLOTAREAH})
+			) {
+	   			$args{PO}->{$ind++} = {
   					TYPE => 'verbatim',
   					VALUE => pgSVGpie(
-              								%args,
-              								RADIUSI => $labRad-0.5,
-              								RADIUSO => $labRad+0.5,
-              								PIESTARTF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTART}),
-              								PIESTOPF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTOP}),
-              								STYLE => 'fill: '.($_ == 0 ? '#99ffdd' : '#ffffff'),
-              							),
-  			};
-
-		}}
-
+						%args,
+						RADIUSI => $labRad-0.5,
+						RADIUSO => $labRad+0.5,
+						PIESTARTF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTART}),
+						PIESTOPF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTOP}),
+						STYLE => 'fill: '.($_ == 0 ? '#99ffdd' : '#ffffff'),
+					),
+	  			};
+			}
+		}
 		# moving along the circle to the next plot area
-		$areaF_0		+= $areaF + $args{CHROGAPF};
-
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 
 }
@@ -307,9 +291,7 @@ sub circleObjectAddHistogram {
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
 	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
-
 		my @intervalIndex = grep{
 			$args{INTERVALS}->[$_]->{CHRO} eq $plot_region->{CHRO}
 			&&
@@ -320,55 +302,39 @@ sub circleObjectAddHistogram {
 
 		# for the histogram, the arc for the histogram baseline is calculated; then, all intervals
 		# are added as path points for the interval mid points, from the baseline +/- percent value
-		my (
-			$chroArcX_0,
-			$chroArcY_0
-		) = pgCirclePoint(
-							%args,
-							RADIUS => $args{PLOTZEROR},
-							CIRCF => $areaF_0,
-						);
+		my ( $chroArcX_0, $chroArcY_0 ) = pgCirclePoint(
+			%args,
+			RADIUS => $args{PLOTZEROR},
+			CIRCF => $areaF_0,
+		);
 
-		my (
-			$chroArcX_n,
-			$chroArcY_n
-		) = pgCirclePoint(
-        			%args,
-        			RADIUS => $args{PLOTZEROR},
-        			CIRCF => $areaF_0 + $areaF,
-        		);
+		my ( $chroArcX_n, $chroArcY_n ) = pgCirclePoint(
+			%args,
+			RADIUS => $args{PLOTZEROR},
+			CIRCF => $areaF_0 + $areaF,
+		);
 
 		foreach my $GL (qw(dupfrequencies delfrequencies)) {
-
 			my @gfvalues = map{ $args{INTF}->{ $GL }->[$_] } @intervalIndex;
-
 			if (any { $_ > 0 } @gfvalues) {
-
 				my $largeArc = $areaF > 0.5 ? 1 : 0;
-				my $fillColor = type2hexC(
-      											%args,
-      											TYPE => $GL,
-      										);
+				my $fillColor = type2hexC(%args, TYPE => $GL);
 
 				# exception is made for single case circles
 				if (scalar @{ $args{SAMPLES} } == 1) {
-
 					foreach my $i (@intervalIndex) {
-
 						my $cnF = $args{INTF}->{ $GL }->[$i];
-
 						if ($cnF != 0) {
-
 							$args{PO}->{$ind++} = {
 								TYPE => 'verbatim',
 								VALUE => pgSVGpie(
-    													%args,
-    													RADIUSI => $args{PLOTAREAR} - $args{PLOTAREAH},
-    													RADIUSO => $args{PLOTAREAR},
-    													PIESTARTF => ($areaF_0 + $args{BASESCALING} * $args{INTERVALS}->[$i]->{SEGSTART}),
-    													PIESTOPF => ($areaF_0 + $args{BASESCALING} * $args{INTERVALS}->[$i]->{SEGSTOP}),
-    													STYLE => 'fill: '.$fillColor.';',
-    												),
+									%args,
+									RADIUSI => $args{PLOTAREAR} - $args{PLOTAREAH},
+									RADIUSO => $args{PLOTAREAR},
+									PIESTARTF => ($areaF_0 + $args{BASESCALING} * $args{INTERVALS}->[$i]->{SEGSTART}),
+									PIESTOPF => ($areaF_0 + $args{BASESCALING} * $args{INTERVALS}->[$i]->{SEGSTOP}),
+									STYLE => 'fill: '.$fillColor.';',
+								),
 							};
 
 						}
@@ -377,58 +343,42 @@ sub circleObjectAddHistogram {
 
 					my $histoSVG = '
 	<path d=" ';
-					$histoSVG		  .= join(' ' ,
-        											'M',
-        											$chroArcX_n,
-        											$chroArcY_n,
-        											'A',
-        											$args{PLOTZEROR},
-        											$args{PLOTZEROR},
-        											'0',
-        											$largeArc,
-        											'0',
-        											$chroArcX_0,
-        											$chroArcY_0,
-        											'L ',
-        										);
+					$histoSVG .= join(' ' ,
+						'M',
+						$chroArcX_n,
+						$chroArcY_n,
+						'A',
+						$args{PLOTZEROR},
+						$args{PLOTZEROR},
+						'0',
+						$largeArc,
+						'0',
+						$chroArcX_0,
+						$chroArcY_0,
+						'L ',
+					);
 
 					foreach my $i (@intervalIndex) {
-
 						my $cnF = $args{INTF}->{ $GL }->[$i];
 						if ($GL =~ /del/i) { $cnF *= -1 }
 						my $segHeight = $cnF / 2 * $args{PLOTAREAH} / 100;
-
 						if ($GL =~ /LOSS/i) {$segHeight = -$segHeight}
-
-						my (
-							$segX,
-							$segY
-						) = pgCirclePoint(
-  										%args,
-  										RADIUS => $args{PLOTZEROR} + $segHeight,
-  										CIRCF => $areaF_0 + $args{BASESCALING} * ($args{INTERVALS}->[$i]->{SEGSTOP} + $args{INTERVALS}->[$i]->{SEGSTART}) / 2,
-  									);
-
-						$histoSVG	.= $segX.' '.$segY.' ';
-
+						my ( $segX, $segY ) = pgCirclePoint(
+							%args,
+							RADIUS => $args{PLOTZEROR} + $segHeight,
+							CIRCF => $areaF_0 + $args{BASESCALING} * ($args{INTERVALS}->[$i]->{SEGSTOP} + $args{INTERVALS}->[$i]->{SEGSTART}) / 2,
+						);
+						$histoSVG .= $segX.' '.$segY.' ';
 					}
 
-					$histoSVG		.= '
+					$histoSVG .= '
 		Z" style="stroke-width: 0.0;  fill: '.$fillColor.';" />';
-
- 					$args{PO}->{$ind++} = {
-							TYPE => 'verbatim',
-							VALUE => $histoSVG,
-					};
-
+ 					$args{PO}->{$ind++} = {TYPE => 'verbatim', VALUE => $histoSVG};
 				}
 			}
 		}
-
 		# moving along the circle to the next plot area
-
 		$areaF_0	+= $areaF + $args{CHROGAPF};
-
 	}
 
 }
@@ -440,38 +390,32 @@ sub circleObjectAddIdeogram {
 	my %args = @_;
 
 	my $areaF_0 = $args{STARTF};
-
 	my $ind = max(keys %{ $args{PO} }) + 1;
-
 	$args{RADIUS} -= $args{FONTPX};
 
 	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
 		my $labelF = $areaF_0 + $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART}) / 2;
-
 		my ($X, $Y, $rad, $deg) = pgCirclePoint(
-              											%args,
-              											RADIUS => $args{RADIUS},
-              											CIRCF => $labelF,
-              										);
+			%args,
+			RADIUS => $args{RADIUS},
+			CIRCF => $labelF,
+		);
 
  		# the rotation for the chromosome labels is calculated, making them aligned along the circle
 		# with the bottom facing the circle's center
-		$deg				+= 90;
+		$deg += 90;
 
 		$args{PO}->{$ind++} = {
-        											TYPE => 'verbatim',
-        											VALUE => '
+			TYPE => 'verbatim',
+			VALUE => '
 	<text x="'.$X.'" y="'.$Y.'"
 		style="text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: '.$args{FONTCOL}.';"
 		transform="rotate('.$deg.' '.$X.' '.$Y.')">
 		'.$plot_region->{CHRO}.'
 	</text>',
-										         };
-
-		$areaF_0	+= $areaF + $args{CHROGAPF};
-
+		};
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 
 	# ideogram ####################################################################
@@ -531,19 +475,19 @@ sub circleObjectAddIdeogram {
 				$bandStopRad		+= 2;
 			}
 
-      my $staining = staining2hex($args{CYTOBANDS}->{$cytoBand}->{STAINING});
+      		my $staining = staining2hex($args{CYTOBANDS}->{$cytoBand}->{STAINING});
 
-  		$args{PO}->{$ind++} = {
+  			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
 				VALUE => pgSVGpie(
-    								%args,
-    								RADIUSI => $bandStopRad,
-    								RADIUSO => $bandStartRad,
-    								PIESTARTF => $cbPlotStartF,
-    								PIESTOPF => $cbPlotStopF,
-    								STYLE => 'fill: '.$staining.';',
-    								TOOLTIP => $cytoBand.': '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTART}.' - '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTOP},
-    							),
+					%args,
+					RADIUSI => $bandStopRad,
+					RADIUSO => $bandStartRad,
+					PIESTARTF => $cbPlotStartF,
+					PIESTOPF => $cbPlotStopF,
+					STYLE => 'fill: '.$staining.';',
+					TOOLTIP => $cytoBand.': '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTART}.' - '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTOP},
+				)
 			};
 
 		# adding a band label if there is enough space
@@ -552,37 +496,28 @@ sub circleObjectAddIdeogram {
  				&&
  				$args{CYTOBANDS}->{ $cytoBand }->{STAINING} !~ /(stalk)|(cen)/i
  			) {
-
 				my $labelF = ($cbPlotStopF + $cbPlotStartF) / 2;
-
 				my ($X, $Y, $rad, $deg) = pgCirclePoint(
-            													%args,
-            													RADIUS => $args{RADIUS} - $args{FONTPX} - 4,
-            													CIRCF => $labelF,
-            												);
+					%args,
+					RADIUS => $args{RADIUS} - $args{FONTPX} - 4,
+					CIRCF => $labelF,
+				);
 
 				# the rotation for the chromosome labels is calculated, making them aligned along the circle
 				# with the bottom facing the circle's center
 				# => should be changed to be along a path ...
-				if (
-					$deg > 90
-					&&
-					$deg <270
-				) {
-					$deg += 180;
-				}
+				if ( $deg > 90 && $deg <270 ) { $deg += 180 }
 				$deg = $deg > 180 ? $deg - 90 : $deg + 90;
 
 				$args{PO}->{$ind++} = {
-          TYPE => 'verbatim',
-          VALUE => '
+          			TYPE => 'verbatim',
+          			VALUE => '
 	<text x="'.$X.'" y="'.$Y.'"
 		style="text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: '.($args{CYTOBANDS}->{ $cytoBand }->{STAINING} =~ /neg/ ? '#666666' : '#fff8dc').';"
 		transform="rotate('.$deg.' '.$X.' '.$Y.')">
 		'.$cytoBand.'
-	</text>',
+	</text>'
 				};
-
 			}
 		}
 
@@ -591,42 +526,40 @@ sub circleObjectAddIdeogram {
 		$args{PO}->{$ind++} = {
 			TYPE => 'verbatim',
 			VALUE => pgSVGpie(
-        							%args,
-        							RADIUSI => $args{RADIUS} - $args{CHROW} + 5,
-        							RADIUSO => $args{RADIUS} - 5,
-        							PIESTARTF => $areaF_0,
-        							PIESTOPF => $currAreaStopF,
-        							STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
-        						),
+				%args,
+				RADIUSI => $args{RADIUS} - $args{CHROW} + 5,
+				RADIUSO => $args{RADIUS} - 5,
+				PIESTARTF => $areaF_0,
+				PIESTOPF => $currAreaStopF,
+				STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
+			)
 		};
 
 		$args{PO}->{$ind++} = {
 			TYPE => 'verbatim',
 			VALUE => pgSVGpie(
-        							%args,
-        							RADIUSI => $args{RADIUS} - $args{CHROW} + 7,
-        							RADIUSO => $args{RADIUS} - 7,
-        							PIESTARTF => $areaF_0,
-        							PIESTOPF => $currAreaStopF,
-        							STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
-        						),
+				%args,
+				RADIUSI => $args{RADIUS} - $args{CHROW} + 7,
+				RADIUSO => $args{RADIUS} - 7,
+				PIESTARTF => $areaF_0,
+				PIESTOPF => $currAreaStopF,
+				STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
+			)
 		};
 
 		$args{PO}->{$ind++} = {
 			TYPE => 'verbatim',
 			VALUE => pgSVGpie(
-        							%args,
-        							RADIUSI => $args{RADIUS} - $args{CHROW} + 8,
-        							RADIUSO => $args{RADIUS} - 7,
-        							PIESTARTF => $areaF_0,
-        							PIESTOPF => $currAreaStopF,
-        							STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
-						        ),
+				%args,
+				RADIUSI => $args{RADIUS} - $args{CHROW} + 8,
+				RADIUSO => $args{RADIUS} - 7,
+				PIESTARTF => $areaF_0,
+				PIESTOPF => $currAreaStopF,
+				STYLE => 'fill: rgb(255,255,255); fill-opacity: 0.2',
+	        )
 		};
-
 		# moving along the circle to the next plot area
-		$areaF_0		+= $areaF + $args{CHROGAPF};
-
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 }
 
@@ -647,20 +580,19 @@ sub circleObjectAddLabelsY {
 			&&
 			$labRad > ($args{PLOTAREAR} - $args{PLOTAREAH})
 		) {
-
 			my ($X, $Y, $rad, $deg) = pgCirclePoint(
-                                      CENTERX => $args{CENTERX},
-                                      CENTERY => $args{CENTERY},
-              												RADIUS => $labRad,
-              												CIRCF => $args{ROTATIONF},
-              											);
+				CENTERX => $args{CENTERX},
+				CENTERY => $args{CENTERY},
+				RADIUS => $labRad,
+				CIRCF => $args{ROTATIONF}
+			);
 
 			$args{PO}->{$ind++} = {
 				TYPE => 'text',
 				X => $X,
 				Y => $Y + $args{FONTPX} / 2 - 2,
 				VALUE => ($args{PLOTT} =~ /array/i ? $_ : abs($_)).$args{PLOTUNIT},
-				STYLE => 'text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: #666666;',
+				STYLE => 'text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: #666666;'
 			};
 
 }}}
@@ -692,27 +624,27 @@ sub circleObjectAddMarkers {
 			my $regMarkStopF = $areaF_0 + $args{BASESCALING} * ($regMarkStopBase - $plot_region->{BASESTART});
 
  			$args{PO}->{ $backind++ } = {
-					TYPE => 'verbatim',
-					VALUE => pgSVGpie(
-      								%args,
-      								RADIUSI => $args{RADIUS} - 2,
-      								RADIUSO => $args{IDEORAD} + 2,
-      								PIESTARTF => $regMarkStartF,
-      								PIESTOPF => $regMarkStopF,
-      								STYLE => 'fill: rgb(255,0,0); fill-opacity: 0.2; stroke:rgb(255,0,0); stroke-width: 0.5px; stroke-opacity: 0.5;',
-							      ),
+				TYPE => 'verbatim',
+				VALUE => pgSVGpie(
+					%args,
+					RADIUSI => $args{RADIUS} - 2,
+					RADIUSO => $args{IDEORAD} + 2,
+					PIESTARTF => $regMarkStartF,
+					PIESTOPF => $regMarkStopF,
+					STYLE => 'fill: rgb(255,0,0); fill-opacity: 0.2; stroke:rgb(255,0,0); stroke-width: 0.5px; stroke-opacity: 0.5;',
+		      	)
 			};
 
  			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
 				VALUE => pgSVGpie(
-        							%args,
-        							RADIUSI => $args{RADIUS} - 2,
-        							RADIUSO => $args{IDEORAD} + 2,
-        							PIESTARTF => $regMarkStartF,
-        							PIESTOPF => $regMarkStopF,
-        							STYLE => 'fill: rgb(255,0,0); fill-opacity: 0.2; stroke:rgb(255,0,0); stroke-width: 0.5px; stroke-opacity: 0.5;',
-        						),
+					%args,
+					RADIUSI => $args{RADIUS} - 2,
+					RADIUSO => $args{IDEORAD} + 2,
+					PIESTARTF => $regMarkStartF,
+					PIESTOPF => $regMarkStopF,
+					STYLE => 'fill: rgb(255,0,0); fill-opacity: 0.2; stroke:rgb(255,0,0); stroke-width: 0.5px; stroke-opacity: 0.5;',
+				)
 			};
 		}
 
@@ -740,16 +672,13 @@ sub circleObjectAddProbes {
 		@currentProbes = grep{ $_->{BASEPOS} >= $plot_region->{BASESTART} } @currentProbes;
 
 		foreach (@currentProbes) {
-
 			my $probeF = $areaF_0 + $args{BASESCALING} * ($_->{BASEPOS} - $plot_region->{BASESTART});
 			my $probeRad = sprintf "%.1f", $args{PLOTZEROR} + ($_->{VALUE} + $args{BASECORR}) * $args{PIXYFAC};
-
 			my ($dotX, $dotY, $rad, $deg) = pgCirclePoint(
-                      												%args,
-                      												RADIUS => $probeRad,
-                      												CIRCF => $probeF,
-                      											);
-
+				%args,
+				RADIUS => $probeRad,
+				CIRCF => $probeF,
+			);
 			$args{PO}->{$ind++} = {
 				LINK => (scalar(@currentProbes) < 2000 ? $args{pgP}->{UCSClink}.'chr'.$chro.'%3A'.($_->{BASEPOS} - 999).'-'.($_->{BASEPOS} + 1000) : q{}),
 				LINKLAB => (scalar(@currentProbes) < 2000 ? $_->{BASEPOS} : q{}),
@@ -758,11 +687,8 @@ sub circleObjectAddProbes {
 				VALUE => '<circle cx="'.$dotX.'" cy="'.$dotY.'" r="'.$dotR.'" />',
 			};
 		}
-
 		# moving along the circle to the next plot area
-
-		$areaF_0		  += $areaF + $args{CHROGAPF};
-
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 }
 
@@ -773,11 +699,9 @@ sub circleObjectAddSegments {
 	my %args = @_;
 
 	my $areaF_0 = $args{STARTF};
-
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
 	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
 
 		my @segments = grep{ $_->{reference_name} eq $plot_region->{CHRO} } @{ $args{SEGDATA} };
@@ -785,34 +709,28 @@ sub circleObjectAddSegments {
 		@segments = grep{ $_->{start} <= $plot_region->{BASESTOP} } @segments;
 
 		foreach $seg (@segments) {
-
 			my $segPlotStartBase = $seg->{start} < $plot_region->{BASESTART} ? $plot_region->{BASESTART} : $seg->{start};
 			my $segPlotStopBase = $seg->{end} > $plot_region->{BASESTOP} ? $plot_region->{BASESTOP} : $seg->{end};
 			my $segPlotStartF = $areaF_0 + $args{BASESCALING} * ($segPlotStartBase - $plot_region->{BASESTART});
 			my $segPlotStopF = $areaF_0 + $args{BASESCALING} * ($segPlotStopBase - $plot_region->{BASESTART});
 			my $segPlotRad = sprintf "%.1f", $args{PLOTZEROR} + ($seg->{info}->{value} + $args{BASECORR}) * $args{PIXYFAC};
-
  			$args{PO}->{$ind++} = {
- 													TYPE => 'verbatim',
- 													VALUE => pgSVGpie(
-																	%args,
-																	LINK => $args{pgP}->{UCSClink}.'chr'.$seg->{reference_name}.'%3A'.$seg->{start}.'-'.$seg->{end},
-																	LINKSHOW => 'new',
-																	LINKLAB => $seg->{info}->{value}.($args{BASECORR} !~ 0 ? ' (corrected by '.$args{BASECORR}.' for plotting)' : q{}).' at chr'.$chro.':'.$seg->{start}.'-'.$seg->{end},
-																	RADIUSI => $segPlotRad - 1,
-																	RADIUSO => $segPlotRad + 1,
-																	PIESTARTF => $segPlotStartF,
-																	PIESTOPF => $segPlotStopF,
-																	CLASS => ($seg->{info}->{value} + $args{BASECORR} > 0 ? 'gb' : 'lb'),
-																),
-												};
-
+				TYPE => 'verbatim',
+				VALUE => pgSVGpie(
+					%args,
+					LINK => $args{pgP}->{UCSClink}.'chr'.$seg->{reference_name}.'%3A'.$seg->{start}.'-'.$seg->{end},
+					LINKSHOW => 'new',
+					LINKLAB => $seg->{info}->{value}.($args{BASECORR} !~ 0 ? ' (corrected by '.$args{BASECORR}.' for plotting)' : q{}).' at chr'.$chro.':'.$seg->{start}.'-'.$seg->{end},
+					RADIUSI => $segPlotRad - 1,
+					RADIUSO => $segPlotRad + 1,
+					PIESTARTF => $segPlotStartF,
+					PIESTOPF => $segPlotStopF,
+					CLASS => ($seg->{info}->{value} + $args{BASECORR} > 0 ? 'gb' : 'lb'),
+				),
+			};
 		}
-
 		# moving along the circle to the next plot area
-
-		$areaF_0		+= $areaF + $args{CHROGAPF};
-
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 }
 
