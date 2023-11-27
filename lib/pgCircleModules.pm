@@ -95,21 +95,17 @@ sub circleObjectConnections {
 						$_->{ $where.'Rad'.$site },
 						$_->{ $where.'Deg'.$site },
 					) = pgCirclePoint(
-											%args,
-											RADIUS => $args{RADIUS},
-											CIRCF => $_->{ $where.$site },
-										);
-
+						%args,
+						RADIUS => $args{RADIUS},
+						CIRCF => $_->{ $where.$site },
+					);
 					$_->{'bez'.$where.$site.'x'} = sprintf "%.1f", $args{CENTERX} + cos( $_->{ $where.'Rad'.$site } ) * $args{RADIUS} * $args{CONNBEZRAD};
 					$_->{'bez'.$where.$site.'y'} = sprintf "%.1f", $args{CENTERY} + sin( $_->{ $where.'Rad'.$site } ) * $args{RADIUS} * $args{CONNBEZRAD};
-
 				}
-
 				# won't be needed unless only few chromosomes are selected,
 				# with one being > 50% of all combined and having a near full change
 				# but since it is possible ...
 				$_->{ 'largeArc'.$site } = $_->{ 'stopDeg'.$site } - $_->{ 'startDeg'.$site } > 180 ? 1 : 0;
-
 			}
 
 			$_->{COLOR1} ||= '127,127,127';
@@ -132,8 +128,9 @@ END
 				TYPE => 'verbatim',
 				VALUE => $conn,
 			};
-
-}}}
+		}
+	}
+}
 
 ################################################################################
 
@@ -156,12 +153,9 @@ sub circleObjectAddArea {
 				STYLE => 'fill: '.$args{pgV}->{plot_areacolor_hex},
 			),
 		};
-
 		# moving along the circle to the next plot area
 		$areaF_0		+= $areaF + $args{CHROGAPF};
-
 	}
-
 }
 
 ################################################################################
@@ -234,12 +228,9 @@ sub circleObjectAddGenes {
 			if ($geneCounter =~ /(0|2|4|6|8)$/) {
 				$geneRad = $args{RADIUS} }
 		}
-
 		# moving along the circle to the next plot area
 		$areaF_0 += $areaF + $args{CHROGAPF};
-
 	}
-
 }
 
 ################################################################################
@@ -278,7 +269,6 @@ sub circleObjectAddGridY {
 		# moving along the circle to the next plot area
 		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
-
 }
 
 ################################################################################
@@ -340,7 +330,6 @@ sub circleObjectAddHistogram {
 						}
 					}
 				} else {
-
 					my $histoSVG = '
 	<path d=" ';
 					$histoSVG .= join(' ' ,
@@ -380,7 +369,6 @@ sub circleObjectAddHistogram {
 		# moving along the circle to the next plot area
 		$areaF_0	+= $areaF + $args{CHROGAPF};
 	}
-
 }
 
 ################################################################################
@@ -453,7 +441,6 @@ sub circleObjectAddIdeogram {
 			my $cbPlotStopF = $areaF_0 + $args{BASESCALING} * ($cbPlotStopBase - $plot_region->{BASESTART});
 
 			# circ_radius valus are saved in separate variables, to be changed for centromers etc.
-
 			my $bandStartRad = $args{RADIUS};
 			my $bandStopRad = $args{RADIUS} - $args{CHROW};
 
