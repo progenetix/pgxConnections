@@ -140,8 +140,8 @@ sub circleObjectAddArea {
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 		$args{PO}->{$ind++} = {
 			TYPE => 'verbatim',
 			VALUE => pgSVGpie(
@@ -154,7 +154,7 @@ sub circleObjectAddArea {
 			),
 		};
 		# moving along the circle to the next plot area
-		$areaF_0		+= $areaF + $args{CHROGAPF};
+		$areaF_0 += $areaF + $args{CHROGAPF};
 	}
 }
 
@@ -167,14 +167,14 @@ sub circleObjectAddGenes {
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
 
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 		my $geneRad = $args{RADIUS};
 		my $geneCounter = 0;
-		my $genes_r = [ grep{ $_->{CHRO} eq $plot_region->{CHRO} } @{ $args{GENES} } ];
-		$genes_r = [ grep{ $_->{BASESTOP} >= $plot_region->{BASESTART} } @{ $genes_r } ];
-		$genes_r = [ grep{ $_->{BASESTART} <= $plot_region->{BASESTOP} } @{ $genes_r } ];
+		my $genes_r = [ grep{ $_->{CHRO} eq $pr->{CHRO} } @{ $args{GENES} } ];
+		$genes_r = [ grep{ $_->{BASESTOP} >= $pr->{BASESTART} } @{ $genes_r } ];
+		$genes_r = [ grep{ $_->{BASESTART} <= $pr->{BASESTOP} } @{ $genes_r } ];
 
 		# randomized HEX color map
 
@@ -202,10 +202,10 @@ sub circleObjectAddGenes {
 
 		foreach my $gene (sort { {$a}->{BASESTART} <=> {$b}->{BASESTART}} @{ $genes_r } ) {
 
-			my $geneStartBase = $gene->{BASESTART} < $plot_region->{BASESTART} ? $plot_region->{BASESTART} : $gene->{BASESTART};
-			my $geneStopBase = $gene->{BASESTOP} > $plot_region->{BASESTOP} ? $plot_region->{BASESTOP} : $gene->{BASESTOP};
-			my $geneStartF = $areaF_0 + $args{BASESCALING} * ($geneStartBase - $plot_region->{BASESTART});
-			my $geneStopF = $areaF_0 + $args{BASESCALING} * ($geneStopBase - $plot_region->{BASESTART});
+			my $geneStartBase = $gene->{BASESTART} < $pr->{BASESTART} ? $pr->{BASESTART} : $gene->{BASESTART};
+			my $geneStopBase = $gene->{BASESTOP} > $pr->{BASESTOP} ? $pr->{BASESTOP} : $gene->{BASESTOP};
+			my $geneStartF = $areaF_0 + $args{BASESCALING} * ($geneStartBase - $pr->{BASESTART});
+			my $geneStopF = $areaF_0 + $args{BASESCALING} * ($geneStopBase - $pr->{BASESTART});
 
 			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
@@ -244,8 +244,8 @@ sub circleObjectAddGridY {
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 		foreach (uniq(@{ $args{LABY} })) {
 			my $labRad = sprintf "%.1f", $args{PLOTZEROR} + $_ * $args{PIXYFAC};
 			if (
@@ -259,8 +259,8 @@ sub circleObjectAddGridY {
 						%args,
 						RADIUSI => $labRad-0.5,
 						RADIUSO => $labRad+0.5,
-						PIESTARTF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTART}),
-						PIESTOPF => ($areaF_0 + $args{BASESCALING} *  $plot_region->{BASESTOP}),
+						PIESTARTF => ($areaF_0 + $args{BASESCALING} *  $pr->{BASESTART}),
+						PIESTOPF => ($areaF_0 + $args{BASESCALING} *  $pr->{BASESTOP}),
 						STYLE => 'fill: '.($_ == 0 ? '#99ffdd' : '#ffffff'),
 					),
 	  			};
@@ -280,14 +280,14 @@ sub circleObjectAddHistogram {
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 		my @intervalIndex = grep{
-			$args{INTERVALS}->[$_]->{CHRO} eq $plot_region->{CHRO}
+			$args{INTERVALS}->[$_]->{CHRO} eq $pr->{CHRO}
 			&&
-			$args{INTERVALS}->[$_]->{SEGSTOP}  >= $plot_region->{BASESTART}
+			$args{INTERVALS}->[$_]->{SEGSTOP}  >= $pr->{BASESTART}
 			&&
-			$args{INTERVALS}->[$_]->{SEGSTART} <= $plot_region->{BASESTOP}
+			$args{INTERVALS}->[$_]->{SEGSTART} <= $pr->{BASESTOP}
 		} 0..$#{ $args{INTERVALS} };
 
 		# for the histogram, the arc for the histogram baseline is calculated; then, all intervals
@@ -381,9 +381,9 @@ sub circleObjectAddIdeogram {
 	my $ind = max(keys %{ $args{PO} }) + 1;
 	$args{RADIUS} -= $args{FONTPX};
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
-		my $labelF = $areaF_0 + $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART}) / 2;
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
+		my $labelF = $areaF_0 + $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART}) / 2;
 		my ($X, $Y, $rad, $deg) = pgCirclePoint(
 			%args,
 			RADIUS => $args{RADIUS},
@@ -400,7 +400,7 @@ sub circleObjectAddIdeogram {
 	<text x="'.$X.'" y="'.$Y.'"
 		style="text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: '.$args{FONTCOL}.';"
 		transform="rotate('.$deg.' '.$X.' '.$Y.')">
-		'.$plot_region->{CHRO}.'
+		'.$pr->{CHRO}.'
 	</text>',
 		};
 		$areaF_0 += $areaF + $args{CHROGAPF};
@@ -411,9 +411,9 @@ sub circleObjectAddIdeogram {
 	$args{RADIUS} -= $args{FONTPX};
 	$areaF_0 = $args{STARTF};
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
 
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 		my $currAreaStopF = $areaF_0 + $areaF;
 
 		# cytobands
@@ -421,59 +421,59 @@ sub circleObjectAddIdeogram {
 		# elaborate workaround: the last band, which is narrower than the one before, would be
 		# drawn over the previous one, giving some strange artefact due to rounding etc.
 		# so, we move it to the back
-		my @chroBands = @{ _sortedBands(%args, CHROS => [ $plot_region->{CHRO} ]) };
+		my @chroBands = @{ _sortedBands(%args, CHROS => [ $pr->{CHRO} ]) };
 		my $lastband = pop(@chroBands);
 		@chroBands = ($lastband, @chroBands);
-		my $qter = _qter(%args, CHRO => $plot_region->{CHRO});
+		my $qter = _qter(%args, CHRO => $pr->{CHRO});
 
-		foreach my $cytoBand (@chroBands) {
+		foreach my $cb (@chroBands) {
 
 			next if (
-				($args{CYTOBANDS}->{ $cytoBand }->{BASESTART} > $plot_region->{BASESTOP})
+				($args{CYTOBANDS}->{ $cb }->{BASESTART} > $pr->{BASESTOP})
 				||
-				($args{CYTOBANDS}->{ $cytoBand }->{BASESTOP} < $plot_region->{BASESTART})
+				($args{CYTOBANDS}->{ $cb }->{BASESTOP} < $pr->{BASESTART})
 			);
 
-			my $cbPlotStartBase = $args{CYTOBANDS}->{ $cytoBand }->{BASESTART} < $plot_region->{BASESTART} ? $plot_region->{BASESTART} : $args{CYTOBANDS}->{ $cytoBand }->{BASESTART};
-			my $cbPlotStopBase = $args{CYTOBANDS}->{ $cytoBand }->{BASESTOP} > $plot_region->{BASESTOP} ? $plot_region->{BASESTOP} : $args{CYTOBANDS}->{ $cytoBand }->{BASESTOP};
+			my $cbStartBase = $args{CYTOBANDS}->{ $cb }->{BASESTART} < $pr->{BASESTART} ? $pr->{BASESTART} : $args{CYTOBANDS}->{ $cb }->{BASESTART};
+			my $cbPlotStopBase = $args{CYTOBANDS}->{ $cb }->{BASESTOP} > $pr->{BASESTOP} ? $pr->{BASESTOP} : $args{CYTOBANDS}->{ $cb }->{BASESTOP};
 
-			my $cbPlotStartF = $areaF_0 + $args{BASESCALING} * ($cbPlotStartBase - $plot_region->{BASESTART});
-			my $cbPlotStopF = $areaF_0 + $args{BASESCALING} * ($cbPlotStopBase - $plot_region->{BASESTART});
+			my $cbPlotStartF = $areaF_0 + $args{BASESCALING} * ($cbStartBase - $pr->{BASESTART});
+			my $cbPlotStopF = $areaF_0 + $args{BASESCALING} * ($cbPlotStopBase - $pr->{BASESTART});
 
 			# circ_radius valus are saved in separate variables, to be changed for centromers etc.
-			my $bandStartRad = $args{RADIUS};
-			my $bandStopRad = $args{RADIUS} - $args{CHROW};
+			my $cbStartRad = $args{RADIUS};
+			my $cbStopRad = $args{RADIUS} - $args{CHROW};
 
 			if (
-				$args{CYTOBANDS}->{ $cytoBand }->{STAINING} =~ /cen/i
+				$args{CYTOBANDS}->{ $cb }->{STAINING} =~ /cen/i
 				||
-				$args{CYTOBANDS}->{ $cytoBand }->{BASESTOP} >= ($qter - 1)
+				$args{CYTOBANDS}->{ $cb }->{BASESTOP} >= ($qter - 1)
 				||
-				$args{CYTOBANDS}->{ $cytoBand }->{BASESTART} == 0
+				$args{CYTOBANDS}->{ $cb }->{BASESTART} == 0
 			) {
-				$bandStartRad		-= 1;
-				$bandStopRad		+= 1;
+				$cbStartRad		-= 1;
+				$cbStopRad		+= 1;
 			}
 
 			if (
-				$args{CYTOBANDS}->{ $cytoBand }->{STAINING} =~ /stalk/i
+				$args{CYTOBANDS}->{ $cb }->{STAINING} =~ /stalk/i
 			) {
-				$bandStartRad		-= 2;
-				$bandStopRad		+= 2;
+				$cbStartRad		-= 2;
+				$cbStopRad		+= 2;
 			}
 
-      		my $staining = staining2hex($args{CYTOBANDS}->{$cytoBand}->{STAINING});
+      		my $staining = staining2hex($args{CYTOBANDS}->{$cb}->{STAINING});
 
   			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
 				VALUE => pgSVGpie(
 					%args,
-					RADIUSI => $bandStopRad,
-					RADIUSO => $bandStartRad,
+					RADIUSI => $cbStopRad,
+					RADIUSO => $cbStartRad,
 					PIESTARTF => $cbPlotStartF,
 					PIESTOPF => $cbPlotStopF,
 					STYLE => 'fill: '.$staining.';',
-					TOOLTIP => $cytoBand.': '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTART}.' - '.$args{CYTOBANDS}->{ $cytoBand }->{BASESTOP},
+					TOOLTIP => $cb.': '.$args{CYTOBANDS}->{ $cb }->{BASESTART}.' - '.$args{CYTOBANDS}->{ $cb }->{BASESTOP},
 				)
 			};
 
@@ -481,7 +481,7 @@ sub circleObjectAddIdeogram {
  			if (
  				($cbPlotStopF - $cbPlotStartF) > 0.03
  				&&
- 				$args{CYTOBANDS}->{ $cytoBand }->{STAINING} !~ /(stalk)|(cen)/i
+ 				$args{CYTOBANDS}->{ $cb }->{STAINING} !~ /(stalk)|(cen)/i
  			) {
 				my $labelF = ($cbPlotStopF + $cbPlotStartF) / 2;
 				my ($X, $Y, $rad, $deg) = pgCirclePoint(
@@ -500,9 +500,9 @@ sub circleObjectAddIdeogram {
           			TYPE => 'verbatim',
           			VALUE => '
 	<text x="'.$X.'" y="'.$Y.'"
-		style="text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: '.($args{CYTOBANDS}->{ $cytoBand }->{STAINING} =~ /neg/ ? '#666666' : '#fff8dc').';"
+		style="text-anchor: middle; font-size: '.$args{FONTPX}.'px; fill: '.($args{CYTOBANDS}->{ $cb }->{STAINING} =~ /neg/ ? '#666666' : '#fff8dc').';"
 		transform="rotate('.$deg.' '.$X.' '.$Y.')">
-		'.$cytoBand.'
+		'.$cb.'
 	</text>'
 				};
 			}
@@ -595,20 +595,20 @@ sub circleObjectAddMarkers {
 	my $ind = max(keys %{ $args{PO} }) + 1;
 	my $backind = 10;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
 
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 
-		my @regMarks = grep{ $_->{CHRO} eq $plot_region->{CHRO} } @{ $args{REGMARKS} };
-		@regMarks = grep{ $_->{BASESTOP} >= $plot_region->{BASESTART} } @regMarks;
-		@regMarks = grep{ $_->{BASESTART} <= $plot_region->{BASESTOP} } @regMarks;
+		my @regMarks = grep{ $_->{CHRO} eq $pr->{CHRO} } @{ $args{REGMARKS} };
+		@regMarks = grep{ $_->{BASESTOP} >= $pr->{BASESTART} } @regMarks;
+		@regMarks = grep{ $_->{BASESTART} <= $pr->{BASESTOP} } @regMarks;
 
 		foreach $regMark (@regMarks) {
 
-			my $regMarkStartBase = $regMark->{BASESTART} < $plot_region->{BASESTART} ? $plot_region->{BASESTART} : $regMark->{BASESTART};
-			my $regMarkStopBase = $regMark->{BASESTOP} > $plot_region->{BASESTOP} ? $plot_region->{BASESTOP} : $regMark->{BASESTOP};
-			my $regMarkStartF = $areaF_0 + $args{BASESCALING} * ($regMarkStartBase - $plot_region->{BASESTART});
-			my $regMarkStopF = $areaF_0 + $args{BASESCALING} * ($regMarkStopBase - $plot_region->{BASESTART});
+			my $regMarkStartBase = $regMark->{BASESTART} < $pr->{BASESTART} ? $pr->{BASESTART} : $regMark->{BASESTART};
+			my $regMarkStopBase = $regMark->{BASESTOP} > $pr->{BASESTOP} ? $pr->{BASESTOP} : $regMark->{BASESTOP};
+			my $regMarkStartF = $areaF_0 + $args{BASESCALING} * ($regMarkStartBase - $pr->{BASESTART});
+			my $regMarkStopF = $areaF_0 + $args{BASESCALING} * ($regMarkStopBase - $pr->{BASESTART});
 
  			$args{PO}->{ $backind++ } = {
 				TYPE => 'verbatim',
@@ -651,15 +651,15 @@ sub circleObjectAddProbes {
 
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
 
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
-		my @currentProbes = grep{ $_->{CHRO} eq $plot_region->{CHRO} } @{ $args{PROBES} };
-		@currentProbes = grep{ $_->{BASEPOS} <= $plot_region->{BASESTOP} } @currentProbes;
-		@currentProbes = grep{ $_->{BASEPOS} >= $plot_region->{BASESTART} } @currentProbes;
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
+		my @currentProbes = grep{ $_->{CHRO} eq $pr->{CHRO} } @{ $args{PROBES} };
+		@currentProbes = grep{ $_->{BASEPOS} <= $pr->{BASESTOP} } @currentProbes;
+		@currentProbes = grep{ $_->{BASEPOS} >= $pr->{BASESTART} } @currentProbes;
 
 		foreach (@currentProbes) {
-			my $probeF = $areaF_0 + $args{BASESCALING} * ($_->{BASEPOS} - $plot_region->{BASESTART});
+			my $probeF = $areaF_0 + $args{BASESCALING} * ($_->{BASEPOS} - $pr->{BASESTART});
 			my $probeRad = sprintf "%.1f", $args{PLOTZEROR} + ($_->{VALUE} + $args{BASECORR}) * $args{PIXYFAC};
 			my ($dotX, $dotY, $rad, $deg) = pgCirclePoint(
 				%args,
@@ -688,18 +688,18 @@ sub circleObjectAddSegments {
 	my $areaF_0 = $args{STARTF};
 	my $ind = max(keys %{ $args{PO} }) + 1;
 
-	foreach my $plot_region (@{ $args{PLOTREGIONS} }) {
-		my $areaF = $args{BASESCALING} * ($plot_region->{BASESTOP} - $plot_region->{BASESTART});
+	foreach my $pr (@{ $args{PLOTREGIONS} }) {
+		my $areaF = $args{BASESCALING} * ($pr->{BASESTOP} - $pr->{BASESTART});
 
-		my @segments = grep{ $_->{reference_name} eq $plot_region->{CHRO} } @{ $args{SEGDATA} };
-		@segments = grep{ $_->{end} >= $plot_region->{BASESTART} } @segments;
-		@segments = grep{ $_->{start} <= $plot_region->{BASESTOP} } @segments;
+		my @segments = grep{ $_->{reference_name} eq $pr->{CHRO} } @{ $args{SEGDATA} };
+		@segments = grep{ $_->{end} >= $pr->{BASESTART} } @segments;
+		@segments = grep{ $_->{start} <= $pr->{BASESTOP} } @segments;
 
 		foreach $seg (@segments) {
-			my $segPlotStartBase = $seg->{start} < $plot_region->{BASESTART} ? $plot_region->{BASESTART} : $seg->{start};
-			my $segPlotStopBase = $seg->{end} > $plot_region->{BASESTOP} ? $plot_region->{BASESTOP} : $seg->{end};
-			my $segPlotStartF = $areaF_0 + $args{BASESCALING} * ($segPlotStartBase - $plot_region->{BASESTART});
-			my $segPlotStopF = $areaF_0 + $args{BASESCALING} * ($segPlotStopBase - $plot_region->{BASESTART});
+			my $segPlotStartBase = $seg->{start} < $pr->{BASESTART} ? $pr->{BASESTART} : $seg->{start};
+			my $segPlotStopBase = $seg->{end} > $pr->{BASESTOP} ? $pr->{BASESTOP} : $seg->{end};
+			my $segPlotStartF = $areaF_0 + $args{BASESCALING} * ($segPlotStartBase - $pr->{BASESTART});
+			my $segPlotStopF = $areaF_0 + $args{BASESCALING} * ($segPlotStopBase - $pr->{BASESTART});
 			my $segPlotRad = sprintf "%.1f", $args{PLOTZEROR} + ($seg->{info}->{value} + $args{BASECORR}) * $args{PIXYFAC};
  			$args{PO}->{$ind++} = {
 				TYPE => 'verbatim',
