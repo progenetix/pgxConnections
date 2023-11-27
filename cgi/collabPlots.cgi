@@ -40,7 +40,7 @@ use svgUtilities;
 #### Examples (compbiozurich logo):
 
 * compbiozurich logo
-    - http://progenetix.org/cgi/pgxConnections/cgi/collabPlots.cgi?nodes=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/people.tab&nodesort=inst&connections=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/connections.tab&legendw=120
+    - http://progenetix.org/cgi/pgxConnections/cgi/collabPlots.cgi?nodes=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/people.tab&nodesort=inst&connections=https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/main/collab/connections.tab&legend_width=120
 =cut
 
 # print 'Content-type: text/plain'."\n\n";
@@ -57,7 +57,8 @@ if ($args{pgV}->{debug} == 1 or $args{pgV}->{help} == 1) {
 
 if ($args{pgV}->{help} == 1) {
 	print '####################################'."\n";
-	print '**Plot Parameters**'."\n\n".'Modify through query string:'."\n\n";
+	print '**Plot Parameters**'."\n\n";
+	print 'Modify through addition to the query string, e.g. "&'."\n\n";
 	my $dump = Dumper($args{pgV});
     print $dump;
 	print '####################################'."\n\n";
@@ -69,8 +70,6 @@ if ($args{pgV}->{help} == 1) {
 # print Dumper($args{pgV});
 
 my $nodesRef = 'https://raw.githubusercontent.com/compbiozurich/compbiozurich.github.io/master/collab/people.tab';
-
-$args{pgV}->{api_doctype} = lc($args{pgV}->{imgtype});
 
 print 'Content-type: image/svg+xml'."\n\n";
 print collabPlots(%args);

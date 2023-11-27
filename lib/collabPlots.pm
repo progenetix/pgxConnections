@@ -6,7 +6,7 @@ sub collabPlots {
 	my %args = @_;
 
 	$args{NODESIZE} ||= 20;
-	$args{pgV}->{imgw} ||= $args{pgV}->{imgh} + $args{pgV}->{legendw};
+	$args{pgV}->{imgw} ||= $args{pgV}->{imgh} + $args{pgV}->{legend_width};
 	$args{CENTERX} ||= $args{pgV}->{imgh} / 2;
 	$args{CENTERY} ||= $args{pgV}->{imgh} / 2;
 	$args{pgV}->{label_rad} ||= $args{pgV}->{circ_radius} + $args{pgV}->{ring_width} + $args{pgV}->{gapwidth};
@@ -29,9 +29,9 @@ sub collabPlots {
 	# tab-delimited users file
 	# format is group_label	group_lat	group_lon	item_size	item_label	item_link	markerType
 
-	$args{pgP}->{loc_projectpath} = $args{pgP}->{loc_collab}.'/'.$args{pgV}->{project};
-	$args{pgP}->{loc_connFile} = $args{pgP}->{loc_projectpath}.'/connections.txt';
-	$args{pgP}->{loc_nodesFile} = $args{pgP}->{loc_projectpath}.'/people.txt';
+	# one can provide local files through upstream  
+	# $args{pgP}->{loc_connFile} ....;
+	# $args{pgP}->{loc_nodesFile} ....;
 
 	# reading the connections file
 	my @connIn;
@@ -206,7 +206,7 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 			$anchorPoint = 'end';
 		}
 
-		if ($args{pgV}->{fontpx} > 0) { 
+		if ($args{pgV}->{font_size} > 0) { 
 			$SVG .= '
 <a
 	xlink:href="'.$nodesOut->{$ID}->{LINK}.'"
@@ -214,7 +214,7 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 	xlink:title="'.$nodesOut->{$ID}->{NAME}.'"
 >
 <text x="'.$X.'" y="'.$Y.'"
-	style="text-anchor: '.$anchorPoint.'; font-size: '.$args{pgV}->{fontpx}.'px; fill: '.$args{pgV}->{fontcol}.';"
+	style="text-anchor: '.$anchorPoint.'; font-size: '.$args{pgV}->{font_size}.'px; fill: '.$args{pgV}->{fontcol}.';"
 	transform="rotate('.(sprintf "%.2f", $deg).' '.$X.' '.$Y.')">
 	'.$nodesOut->{$ID}->{NAME}.'
 </text>
@@ -227,10 +227,10 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 	# drawing the legend, only if requested
 	###############################################################################
 
-	if ($args{pgV}->{legendw} > 1) {
+	if ($args{pgV}->{legend_width} > 1) {
 
-		my $legendX = $args{pgV}->{imgw} - $args{pgV}->{fontpx} * 2;
-		my $legendFontPx = $args{pgV}->{legendfpx};
+		my $legendX = $args{pgV}->{imgw} - $args{pgV}->{font_size} * 2;
+		my $legendFontPx = $args{pgV}->{legend_font_size};
 		my $entityNumber = scalar(keys %{$entities});
 
 		while ( $args{pgV}->{imgh} < (2 * $legendFontPx * ($entityNumber + 1)) ) { $legendFontPx-- }
@@ -246,10 +246,10 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 			@down = shuffle(@down) }
 		my $legendItemH = $entityNumber * 2 * $legendFontPx + 2 * $legendFontPx;
 
-		if ($args{pgV}->{legendpos} =~ /split/) {
+		if ($args{pgV}->{legend_placement} =~ /split/) {
 			$args{pgV}->{legend_y_gap} = $args{pgV}->{imgh} - $legendItemH - 4 * $legendFontPx }
 
-		if ($args{pgV}->{legendpos} =~ /split|center/) {
+		if ($args{pgV}->{legend_placement} =~ /split|center/) {
 
 			my (@even, @odd);
 
@@ -266,7 +266,7 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 
 		}
 
-		if ($args{pgV}->{legendpos} =~ /bottom/) {
+		if ($args{pgV}->{legend_placement} =~ /bottom/) {
 
 			if ($args{pgV}->{legendsort} =~ /size/i) {
 				@up = sort { length($a) <=> length($b) } @down }
@@ -278,9 +278,9 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 
 		foreach (@down) {
 			$SVG			.= '
-<rect x="'.$legendX.'" y="'.$topLegendY.'" width="'.($args{pgV}->{fontpx} + 1).'" height="'.($legendFontPx + 1).'" fill="rgb('.$entities->{$_}->{COLOR}.')" />
+<rect x="'.$legendX.'" y="'.$topLegendY.'" width="'.($args{pgV}->{font_size} + 1).'" height="'.($legendFontPx + 1).'" fill="rgb('.$entities->{$_}->{COLOR}.')" />
 <text
-	x="'.($legendX - $args{pgV}->{fontpx}).'" y="'.($topLegendY + $legendFontPx - 1).'"
+	x="'.($legendX - $args{pgV}->{font_size}).'" y="'.($topLegendY + $legendFontPx - 1).'"
 	style="text-anchor: end; font-size: '.$legendFontPx.'px; fill: '.$args{pgV}->{fontcol}.';"
 >'._EscapeXML($_).'</text>';
 
@@ -291,9 +291,9 @@ if ($args{pgV}->{transparent} !~ /transparent/) {
 		foreach (@up) {
 
 			$SVG			.= '
-<rect x="'.$legendX.'" y="'.$bottomLegendY.'" width="'.($args{pgV}->{fontpx} + 1).'" height="'.($legendFontPx + 1).'" fill="rgb('.$entities->{$_}->{COLOR}.')" />
+<rect x="'.$legendX.'" y="'.$bottomLegendY.'" width="'.($args{pgV}->{font_size} + 1).'" height="'.($legendFontPx + 1).'" fill="rgb('.$entities->{$_}->{COLOR}.')" />
 <text
-	x="'.($legendX - $args{pgV}->{fontpx}).'" y="'.($bottomLegendY + $legendFontPx - 1).'"
+	x="'.($legendX - $args{pgV}->{font_size}).'" y="'.($bottomLegendY + $legendFontPx - 1).'"
 	style="text-anchor: end; font-size: '.$legendFontPx.'px; fill: '.$args{pgV}->{fontcol}.';"
 >'._EscapeXML($_).'</text>';
 
