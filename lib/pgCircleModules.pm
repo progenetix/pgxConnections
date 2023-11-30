@@ -12,37 +12,28 @@ sub circleObjectConnections {
 	my @connections;
 
 	for my $i (0..$#{ $args{PLOTREGIONS} }) {
-
 		my $areaF = $args{BASESCALING} * ($args{PLOTREGIONS}->[$i]->{BASESTOP} - $args{PLOTREGIONS}->[$i]->{BASESTART});
-
 		foreach my $sample (@{ $args{SAMPLES} }) {
-
 			my @ints_0 = grep{ $_->{reference_name} eq $args{PLOTREGIONS}->[$i]->{CHRO} } @{ $sample->{ variants } };
 			@ints_0 = grep{ $_->{end} >= $args{PLOTREGIONS}->[$i]->{BASESTART} } @ints_0;
 			@ints_0 = grep{ $_->{start} <= $args{PLOTREGIONS}->[$i]->{BASESTOP} } @ints_0;
 
 			for my $m (0..$#ints_0) {
-
 				if ($ints_0[$m]->{start} <  $args{PLOTREGIONS}->[$i]->{BASESTART}) { $ints_0[$m]->{start} = $args{PLOTREGIONS}->[$i]->{BASESTART} }
 				if ($ints_0[$m]->{end} >  $args{PLOTREGIONS}->[$i]->{BASESTOP}) { $ints_0[$m]->{end} = $args{PLOTREGIONS}->[$i]->{BASESTOP} }
 
 				$ints_0[$m]->{STARTF} = $areaF_0 + $args{BASESCALING} * $ints_0[$m]->{start};
 				$ints_0[$m]->{STOPF} = $areaF_0 + $args{BASESCALING} * $ints_0[$m]->{end};
-
 			}
 
 			my $connAreaF_0 = $areaF_0 + $areaF + $args{CHROGAPF};
 
 			for my $k (($i+1)..$#{ $args{PLOTREGIONS} }) {
-
 				my $connAreaF = $args{BASESCALING} * ($args{PLOTREGIONS}->[$k]->{BASESTOP} - $args{PLOTREGIONS}->[$k]->{BASESTART});
-
 				my @ints_n = grep{ $_->{reference_name} eq $args{PLOTREGIONS}->[$k]->{CHRO} } @{ $sample->{ variants } };
 				@ints_n = grep{ $_->{end} >= $args{PLOTREGIONS}->[$k]->{BASESTART} } @ints_n;
 				@ints_n = grep{ $_->{start} <= $args{PLOTREGIONS}->[$k]->{BASESTOP} } @ints_n;
-
 				for my $o (0..$#ints_n) {
-
 					if ($ints_n[$o]->{start} <  $args{PLOTREGIONS}->[$k]->{BASESTART}) { $ints_n[$o]->{start} = $args{PLOTREGIONS}->[$k]->{BASESTART} }
 					if ($ints_n[$o]->{end} >  $args{PLOTREGIONS}->[$k]->{BASESTOP}) { $ints_n[$o]->{end} = $args{PLOTREGIONS}->[$k]->{BASESTOP} }
 
@@ -50,7 +41,6 @@ sub circleObjectConnections {
 					$ints_n[$o]->{STOPF} = $connAreaF_0 + $args{BASESCALING} * $ints_n[$o]->{end};
 
 					foreach my $startInterval (@ints_0) {
-
 						my $conn = {
 							CHRO1 => $startInterval->{reference_name},
 							start1 => $startInterval->{STARTF},
@@ -78,7 +68,6 @@ sub circleObjectConnections {
 			}
 		}
 		$areaF_0 += $areaF + $args{CHROGAPF};
-
 	}
 
   ##############################################################################
