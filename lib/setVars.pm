@@ -5,14 +5,14 @@ use CGI qw(param multi_param);
 sub setDefaults {
 
   my $defaults = {
-    'circ_radius' => 130,
+    'circ_radius' => 110,
     'circ_node_gaps' => 2,
     'ring_width' => 10,
     'collab' => 1,
     'conn_opacity' => 0.5,
     'connections' => {},
     'fontcol' => '#000000',
-    'font_size' => 15,
+    'font_size' => 12,
     'gapwidth' => 5,
     'imgh' => 620,
     'legend_font_size' => 13,
